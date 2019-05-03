@@ -13,27 +13,26 @@ Sculptor::Sculptor(int nx, int ny, int nz){
 
     v = new Voxel**[nx];
     if(v == nullptr){
-        cout << "Erro na alocação das linhas do Voxel" << endl;
+        cout << "Erro na alocaÃ§Ã£o das linhas do Voxel" << endl;
         exit(0);
     }
     v[0] = new Voxel*[nx*ny];
     if(v[0] == nullptr){
-        cout << "Erro na alocação das colunas do Voxel" << endl;
+        cout << "Erro na alocaÃ§Ã£o das colunas do Voxel" << endl;
         exit(0);
     }
     v[0][0] = new Voxel[nx*ny*nz];
     if(v[0][0] == nullptr){
-        cout << "Erro na alocação dos planos do Voxel" << endl;
+        cout << "Erro na alocaÃ§Ã£o dos planos do Voxel" << endl;
         exit(0);
     }
 
-    for(int i=0;i<nx;i++){
-        v[i] = v[i] + ny;
+    for(int i = 1; i<nx; i++){
+
+        v[i] = v[i-1] + ny;
     }
-    for(int i=0;i<nx*ny;i++){
-        for(int j=0;j<nx*ny;j++){
-            v[i][j] = v[i][j] + ny;
-        }
+    for(int i = 1; i<nx*ny; i++){
+        v[0][i] = v[0][i-1] + nz;
     }
     for(int i=0;i<nx;i++){
         for(int j=0;j<ny;j++){
@@ -173,32 +172,31 @@ void Sculptor::cutEllipsoid(int xcenter, int ycenter, int zcenter, int rx, int r
 }
 
 void Sculptor::writeOFF(string filename){
-    ofstream fout;
-    fout.open("./"+filename+".off");
-    fout << "OFF" << endl;
+    ofstream outfile(filename);
+    outfile << "OFF" << endl;
     int nv = 0, nvervox = 0;
     for(int i=0;i<nx;i++){
         for(int j=0;j<ny;j++){
             for(int k=0;k<nz;k++){
-                if(v[i][j][k].isOn == 0){
+                //if(v[i][j][k].isOn == 0){
                     nv++;
-                }
+                //}
             }
         }
     }
-    fout << 8*nv << " " << 6*nv << 0 << endl;
+    outfile << 8*nv << " " << 6*nv << 0 << endl;
     for(int i=0;i<nx;i++){
         for(int j=0;j<ny;j++){
             for(int k=0;k<nz;k++){
                 if(v[i][j][k].isOn == 0){
-                    fout << -0.5+i << " " << 0.5+j << " " << -0.5+k << endl;
-                    fout << -0.5+i << " " << -0.5+j << " " << -0.5+k << endl;
-                    fout << 0.5+i << " " << -0.5+j << " " << -0.5+k << endl;
-                    fout << 0.5+i << " " << 0.5+j << " " << -0.5+k << endl;
-                    fout << -0.5+i << " " << 0.5+j << " " << 0.5+k << endl;
-                    fout << -0.5+i << " " << -0.5+j << " " << 0.5+k << endl;
-                    fout << 0.5+i << " " << -0.5+j << " " << 0.5+k << endl;
-                    fout << 0.5+i << " " << 0.5+j << " " << 0.5+k << endl;
+                    outfile << -0.5+i << " " << 0.5+j << " " << -0.5+k << endl;
+                    outfile << -0.5+i << " " << -0.5+j << " " << -0.5+k << endl;
+                    outfile << 0.5+i << " " << -0.5+j << " " << -0.5+k << endl;
+                    outfile << 0.5+i << " " << 0.5+j << " " << -0.5+k << endl;
+                    outfile << -0.5+i << " " << 0.5+j << " " << 0.5+k << endl;
+                    outfile << -0.5+i << " " << -0.5+j << " " << 0.5+k << endl;
+                    outfile << 0.5+i << " " << -0.5+j << " " << 0.5+k << endl;
+                    outfile << 0.5+i << " " << 0.5+j << " " << 0.5+k << endl;
                 }
             }
         }
@@ -207,17 +205,16 @@ void Sculptor::writeOFF(string filename){
         for(int j=0;j<ny;j++){
             for(int k=0;k<nz;k++){
                 if(v[i][j][k].isOn == 0){
-                    fout << "4" << nvervox+0 << " " << nvervox+3 << " " << nvervox+2 << " " << nvervox+1 << " " << v[i][j][k].r << " " << v[i][j][k].g << " " << v[i][j][k].b << " " << v[i][j][k].a << endl;
-                    fout << "4" << nvervox+4 << " " << nvervox+5 << " " << nvervox+6 << " " << nvervox+7 << " " << v[i][j][k].r << " " << v[i][j][k].g << " " << v[i][j][k].b << " " << v[i][j][k].a << endl;
-                    fout << "4" << nvervox+0 << " " << nvervox+1 << " " << nvervox+5 << " " << nvervox+4 << " " << v[i][j][k].r << " " << v[i][j][k].g << " " << v[i][j][k].b << " " << v[i][j][k].a << endl;
-                    fout << "4" << nvervox+0 << " " << nvervox+4 << " " << nvervox+7 << " " << nvervox+3 << " " << v[i][j][k].r << " " << v[i][j][k].g << " " << v[i][j][k].b << " " << v[i][j][k].a << endl;
-                    fout << "4" << nvervox+3 << " " << nvervox+7 << " " << nvervox+6 << " " << nvervox+2 << " " << v[i][j][k].r << " " << v[i][j][k].g << " " << v[i][j][k].b << " " << v[i][j][k].a << endl;
-                    fout << "4" << nvervox+1 << " " << nvervox+2 << " " << nvervox+6 << " " << nvervox+5 << " " << v[i][j][k].r << " " << v[i][j][k].g << " " << v[i][j][k].b << " " << v[i][j][k].a << endl;
+                    outfile << "4" << nvervox+0 << " " << nvervox+3 << " " << nvervox+2 << " " << nvervox+1 << " " << v[i][j][k].r << " " << v[i][j][k].g << " " << v[i][j][k].b << " " << v[i][j][k].a << endl;
+                    outfile << "4" << nvervox+4 << " " << nvervox+5 << " " << nvervox+6 << " " << nvervox+7 << " " << v[i][j][k].r << " " << v[i][j][k].g << " " << v[i][j][k].b << " " << v[i][j][k].a << endl;
+                    outfile << "4" << nvervox+0 << " " << nvervox+1 << " " << nvervox+5 << " " << nvervox+4 << " " << v[i][j][k].r << " " << v[i][j][k].g << " " << v[i][j][k].b << " " << v[i][j][k].a << endl;
+                    outfile << "4" << nvervox+0 << " " << nvervox+4 << " " << nvervox+7 << " " << nvervox+3 << " " << v[i][j][k].r << " " << v[i][j][k].g << " " << v[i][j][k].b << " " << v[i][j][k].a << endl;
+                    outfile << "4" << nvervox+3 << " " << nvervox+7 << " " << nvervox+6 << " " << nvervox+2 << " " << v[i][j][k].r << " " << v[i][j][k].g << " " << v[i][j][k].b << " " << v[i][j][k].a << endl;
+                    outfile << "4" << nvervox+1 << " " << nvervox+2 << " " << nvervox+6 << " " << nvervox+5 << " " << v[i][j][k].r << " " << v[i][j][k].g << " " << v[i][j][k].b << " " << v[i][j][k].a << endl;
                     nvervox++;
                 }
             }
         }
     }
-
-
+    outfile.close();
 }
