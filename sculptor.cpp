@@ -174,21 +174,21 @@ void Sculptor::cutEllipsoid(int xcenter, int ycenter, int zcenter, int rx, int r
 void Sculptor::writeOFF(string filename){
     ofstream outfile(filename);
     outfile << "OFF" << endl;
-    int nv = 0, nvervox = 0;
+    int nv = 1, nvervox = 0;
     for(int i=0;i<nx;i++){
         for(int j=0;j<ny;j++){
             for(int k=0;k<nz;k++){
-                //if(v[i][j][k].isOn == 0){
+                if(v[i][j][k].isOn){
                     nv++;
-                //}
+                }
             }
-        }
+       }
     }
-    outfile << 8*nv << " " << 6*nv << 0 << endl;
+    outfile << 8*nv << " " << 6*nv << " " << 0 << std::endl;
     for(int i=0;i<nx;i++){
         for(int j=0;j<ny;j++){
             for(int k=0;k<nz;k++){
-                if(v[i][j][k].isOn == 0){
+                if(v[i][j][k].isOn){
                     outfile << -0.5+i << " " << 0.5+j << " " << -0.5+k << endl;
                     outfile << -0.5+i << " " << -0.5+j << " " << -0.5+k << endl;
                     outfile << 0.5+i << " " << -0.5+j << " " << -0.5+k << endl;
